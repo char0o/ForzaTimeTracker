@@ -5,8 +5,9 @@ import jwt from "jsonwebtoken";
 const secretKey = "mysecretkey";
 
 interface UserPayload {
-  id: ObjectId;
+  id: string;
   email: string;
+  displayName: string | null;
 }
 
 export const verifyToken = (

@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
+import{ jwtDecode} from 'jwt-decode';
+
+interface DecodedToken{
+    id: string;
+    email: string;
+    displayName?: string;
+}
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
     children,
@@ -17,6 +24,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
             navigate("/");
             return;
           }
+
           const response = await fetch("http://localhost:5000/api/verify", {
             method: "POST",
             headers: {
@@ -31,6 +39,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
             return;
           }
         } catch (error) {
+            console.log("Tabrnar");
           console.error(error);
         } finally {
           setLoading(false);

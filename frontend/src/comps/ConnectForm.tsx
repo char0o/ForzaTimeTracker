@@ -15,6 +15,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import SignupModal from "./SignupModal";
+import ErrorBox from "./ErrorBox";
 
 interface ConnectData {
   email: string;
@@ -56,7 +57,8 @@ const ConnectForm: React.FC = () => {
         setError("Invalid login");
       } else if (response.ok) {
         const data = await response.json();
-        localStorage.setItem("token", data);
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("displayName", JSON.stringify(data.displayName));
         navigate("/dashboard");
       }
     } catch (error) {
@@ -105,11 +107,7 @@ const ConnectForm: React.FC = () => {
         <Flex direction="column">
           <Box>
             <Heading mb="3">Login to your account</Heading>
-            {error && (
-              <Box py="3" bg="red.400" textAlign="center">
-                <Text color="white">{error}</Text>
-              </Box>
-            )}
+            {error && <ErrorBox message={error} />}
             <form onSubmit={handleSubmit}>
               <FormControl id="email" mb="4">
                 <FormLabel>Email address</FormLabel>
@@ -117,6 +115,7 @@ const ConnectForm: React.FC = () => {
                   type="email"
                   onChange={handleChange}
                   name="email"
+                  bg="white"
                   required
                 />
               </FormControl>
@@ -126,6 +125,7 @@ const ConnectForm: React.FC = () => {
                   type="password"
                   onChange={handleChange}
                   name="password"
+                  bg="white"
                   required
                 />
               </FormControl>
@@ -151,8 +151,10 @@ const ConnectForm: React.FC = () => {
 
           <Button
             leftIcon={<FcGoogle />}
-            colorScheme="gray"
+            colorScheme="white"
+            bg="white"
             variant="outline"
+            borderColor={"gray.300"}
             mb="4"
           >
             Sign in with Google

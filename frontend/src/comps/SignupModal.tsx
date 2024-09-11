@@ -19,7 +19,6 @@ const SignupModal: React.FC<SignupModalProps> = ({ isOpen, onClose }) => {
       <ModalOverlay />
 
       <ModalContent>
-        <ModalHeader>Create an account</ModalHeader>
         <Box mx="5">
           <SignupForm />
         </Box>

@@ -9,11 +9,58 @@ import {
   Button,
   Flex,
   Divider,
+  useDisclosure,
 } from "@chakra-ui/react";
 
 import { FcGoogle } from "react-icons/fc";
+import SignupModal from "./SignupModal";
+
+interface ConnectData {
+  email: string;
+  password: string;
+}
 
 const ConnectForm: React.FC = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const [formData, setFormData] = useState<ConnectData>({
+    email: "",
+    password: "",
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const response = await fetch("http://localhost:5000/api/signin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      if (!response.ok) {
+        setLoading(false);
+        setError("Invalid credentials");
+        throw new Error("Response not ok");
+      }
+    } catch (error) {
+      setLoading(false);
+      setError("Error while connecting to the server");
+      console.error(error);
+    }
+  };
+
   return (
     <Flex height="100vh">
       <Box
@@ -35,11 +82,12 @@ const ConnectForm: React.FC = () => {
             </Text>
           </Box>
           <Text color="white" fontSize="24px" mb="4">
-            Join a community now and upload your best times
+            Join or create a community and upload your best times
           </Text>
-          <Button type="button" width="200px">
+          <Button onClick={onOpen} type="button" width="200px">
             Join now
           </Button>
+          <SignupModal isOpen={isOpen} onClose={onClose} />
         </Flex>
       </Box>
 
@@ -52,18 +100,19 @@ const ConnectForm: React.FC = () => {
       >
         <Flex direction="column">
           <Box>
-            <Heading mb="6">Login to your account</Heading>
-            <form>
+            <Heading mb="3">Login to your account</Heading>
+            {error && <Box py="3" bg="red.400" textAlign="center"><Text color="white">{error}</Text></Box>}
+            <form onSubmit={handleSubmit}>
               <FormControl id="email" mb="4">
                 <FormLabel>Email address</FormLabel>
-                <Input type="email" required />
+                <Input type="email" onChange={handleChange} required />
               </FormControl>
               <FormControl id="password" mb="4">
                 <FormLabel>Password</FormLabel>
-                <Input type="password" required />
+                <Input type="password" onChange={handleChange} required />
               </FormControl>
-              <Button type="submit" colorScheme="blue" width="full" mb="4">
-                Connect
+              <Button type="submit" colorScheme="blue" width="full" mb="4" isLoading={loading} loadingText="Connecting...">
+                {loading ? "Connecting..." : "Sign in"}
               </Button>
             </form>
           </Box>
@@ -75,13 +124,14 @@ const ConnectForm: React.FC = () => {
             <Divider borderColor="gray.300" />
           </Flex>
 
-
           <Button
             leftIcon={<FcGoogle />}
             colorScheme="gray"
             variant="outline"
             mb="4"
-          >Sign in with Google</Button>
+          >
+            Sign in with Google
+          </Button>
         </Flex>
       </Box>
     </Flex>

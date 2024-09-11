@@ -1,12 +1,16 @@
-import mongoose from 'mongoose';
+import { connect } from "http2";
+import mongoose from "mongoose";
 
-mongoose.connect('mongodb://localhost:27017/mydb');
+mongoose.connect("mongodb://localhost:27017/mydb");
 
-const FormSchema = new mongoose.Schema({
-    map: String,
-    time: String,
-});
+const connectDB = async () => {
+  try {
+    await mongoose.connect("mongodb://localhost:27017/mydb");
+    console.log("Connected to db");
+  } catch (error) {
+    console.error(error);
+    process.exit(1);
+  }
+};
 
-const FormModel = mongoose.model('Form', FormSchema);
-
-export default FormModel;
+export default connectDB;

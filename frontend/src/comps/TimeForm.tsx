@@ -40,21 +40,21 @@ const TimeForm: React.FC = () => {
     <form onSubmit={handleSubmit}>
       <label>
         Map:
-        <input 
-            type="text" 
-            name="map" 
-            value={formData.map} 
-            onChange={handleChange}
+        <input
+          type="text"
+          name="map"
+          value={formData.map}
+          onChange={handleChange}
         />
       </label>
       <br />
       <label>
         Time:
-        <input 
-            type="text" 
-            name="time" 
-            value={formData.time} 
-            onChange={handleChange}
+        <input
+          type="text"
+          name="time"
+          value={formData.time}
+          onChange={handleChange}
         />
       </label>
       <br />

@@ -12,6 +12,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 
+import { useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import SignupModal from "./SignupModal";
 
@@ -24,6 +25,7 @@ const ConnectForm: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState<ConnectData>({
     email: "",
@@ -49,15 +51,17 @@ const ConnectForm: React.FC = () => {
         },
         body: JSON.stringify(formData),
       });
-      if (!response.ok) {
+      if (response.status === 401) {
         setLoading(false);
-        setError("Invalid credentials");
-        throw new Error("Response not ok");
+        setError("Invalid login");
+      } else if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem("token", data);
+        navigate("/dashboard");
       }
     } catch (error) {
       setLoading(false);
       setError("Error while connecting to the server");
-      console.error(error);
     }
   };
 
@@ -101,17 +105,38 @@ const ConnectForm: React.FC = () => {
         <Flex direction="column">
           <Box>
             <Heading mb="3">Login to your account</Heading>
-            {error && <Box py="3" bg="red.400" textAlign="center"><Text color="white">{error}</Text></Box>}
+            {error && (
+              <Box py="3" bg="red.400" textAlign="center">
+                <Text color="white">{error}</Text>
+              </Box>
+            )}
             <form onSubmit={handleSubmit}>
               <FormControl id="email" mb="4">
                 <FormLabel>Email address</FormLabel>
-                <Input type="email" onChange={handleChange} required />
+                <Input
+                  type="email"
+                  onChange={handleChange}
+                  name="email"
+                  required
+                />
               </FormControl>
               <FormControl id="password" mb="4">
                 <FormLabel>Password</FormLabel>
-                <Input type="password" onChange={handleChange} required />
+                <Input
+                  type="password"
+                  onChange={handleChange}
+                  name="password"
+                  required
+                />
               </FormControl>
-              <Button type="submit" colorScheme="blue" width="full" mb="4" isLoading={loading} loadingText="Connecting...">
+              <Button
+                type="submit"
+                colorScheme="blue"
+                width="full"
+                mb="4"
+                isLoading={loading}
+                loadingText="Connecting..."
+              >
                 {loading ? "Connecting..." : "Sign in"}
               </Button>
             </form>

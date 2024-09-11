@@ -1,22 +1,33 @@
-import React, { useEffect, useState } from 'react';
-import logo from './logo.svg';
-import axios from 'axios';
-import './App.css';
-import TimeForm from './TimeForm'
-import ConnectForm from './ConnectForm';
-import { ChakraProvider } from '@chakra-ui/react';
-import { Box, Text } from "@chakra-ui/react"
+import React, { useEffect, useState } from "react";
+import logo from "./logo.svg";
+import axios from "axios";
+import "./App.css";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
+import ConnectForm from "./comps/ConnectForm";
+import { ChakraProvider } from "@chakra-ui/react";
+import HomePage from "./pages/HomePage";
+import Dashboard from "./pages/DashBoard";
+import ProtectedRoute from "./util/ProtectedRoute";
+
+
 
 function App() {
-
-
-
   return (
-    <ChakraProvider>   
-
-    <div>
-      <ConnectForm />
-    </div>
+    <ChakraProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </Router>
     </ChakraProvider>
   );
 }

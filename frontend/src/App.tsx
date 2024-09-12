@@ -10,7 +10,7 @@ import HomePage from "./pages/HomePage";
 import Dashboard from "./pages/DashBoard";
 import ProtectedRoute from "./util/ProtectedRoute";
 import NewGroup from "./pages/NewGroup";
-
+import MyGroups from "./pages/MyGroups";
 
 function App() {
   return (
@@ -26,10 +26,19 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/newgroup"
+          <Route
+            path="/newgroup"
             element={
               <ProtectedRoute>
                 <NewGroup />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/mygroups"
+            element={
+              <ProtectedRoute>
+                <MyGroups />
               </ProtectedRoute>
             }
           />

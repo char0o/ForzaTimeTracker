@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Box, Text, Button, Flex, Heading } from "@chakra-ui/react";
+import { Box, Text, Flex, Heading } from "@chakra-ui/react";
 import ChooseDisplayName from "../comps/ChooseDisplayName";
 import GroupsDisplay from "../comps/GroupsDisplay";
-
+import Navbar from "../comps/Navbar";
 const Dashboard: React.FC = () => {
   const [displayName, setDisplayName] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState<boolean>(true);
@@ -36,6 +36,7 @@ const Dashboard: React.FC = () => {
       height="100vh"
       direction="column"
       alignContent="center"
+      justifyContent="flex-start"
       justify="center"
       bg="gray.50"
     >
@@ -54,7 +55,13 @@ const Dashboard: React.FC = () => {
         </>
       ) : (
         <>
-          <GroupsDisplay />
+          <Navbar />
+          <Flex mx="auto" mt="50">
+          <Text fontSize="24">
+            Welcome to the EpicRacerTimes community, {displayName}!
+          </Text>
+          </Flex>
+
         </>
       )}
     </Flex>

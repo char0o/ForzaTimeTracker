@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { FormControl, FormLabel, Button, Input, Box } from "@chakra-ui/react";
+import { FormControl, Button, Input } from "@chakra-ui/react";
 import ErrorBox from "./ErrorBox";
-
+import {GetSession} from "../util/SessionManager";
 interface ChooseDisplayNameData {
   displayName: string;
 }
@@ -28,18 +28,15 @@ const ChooseDisplayName: React.FC<ChooseDisplayNameProps> = ( {onChange} ) => {
     e.preventDefault();
     console.log(displayName);
     try {
-        const sessionInfo = localStorage.getItem("sessionInfo");
-        const sessionObj = sessionInfo ? JSON.parse(sessionInfo) : null;
-        if (!sessionObj || !sessionObj.token) {
-            throw new Error("No token in session");
+        const session = GetSession();
+        if (!session || !session.token) {
+            return;
         }
-        const token = sessionObj.token;
-        console.log(token);
         const response = await fetch("http://localhost:5000/api/choosedisplayname", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          authorization: `Bearer ${token}`,
+          authorization: `Bearer ${session.token}`,
         },
         body: JSON.stringify(displayName),
         });
@@ -47,8 +44,8 @@ const ChooseDisplayName: React.FC<ChooseDisplayNameProps> = ( {onChange} ) => {
             setError("Name already taken");
             return;
         }
-        sessionObj.displayName = displayName.displayName;
-        localStorage.setItem("sessionInfo", JSON.stringify(sessionObj));
+        session.displayName = displayName.displayName;
+        localStorage.setItem("sessionInfo", JSON.stringify(session));
         onChange();
     } catch (error) {
       console.error(error);

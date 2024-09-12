@@ -1,25 +1,39 @@
 import React, { useEffect, useState } from "react";
-import { Box, Text, Button, Flex, Heading, Link, Divider } from "@chakra-ui/react";
+import {
+  Box,
+  Text,
+  Button,
+  Flex,
+  Heading,
+  Link,
+  Divider,
+  Card,
+  Icon,
+  Image,
+} from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
+import { MdGroups } from "react-icons/md";
+import { group } from "console";
 
 const GroupsDisplay: React.FC = () => {
   const navigate = useNavigate();
   const [groups, setGroups] = useState([]);
-
-    const handleClick = (name: string) => {
-      switch (name) {
-        case "create":
-          navigate("/newgroup");
-          break;
-        case "join":
-          navigate("/joingroup");
-          break;
-        default:
-          break;
-      }
-    };
+  const [loading, setLoading] = useState(true);
+  const handleClick = (name: string) => {
+    switch (name) {
+      case "create":
+        navigate("/newgroup");
+        break;
+      case "join":
+        navigate("/joingroup");
+        break;
+      default:
+        break;
+    }
+  };
   useEffect(() => {
     const fetchGroups = async () => {
+      setLoading(true);
       try {
         const sessionObj = JSON.parse(
           localStorage.getItem("sessionInfo") || "{}"
@@ -37,7 +51,10 @@ const GroupsDisplay: React.FC = () => {
         });
         if (res.ok) {
           const data = await res.json();
+          console.log(data);
           setGroups(data);
+
+          setLoading(false);
         }
       } catch (error) {
         console.log("ok");
@@ -46,31 +63,68 @@ const GroupsDisplay: React.FC = () => {
     };
     fetchGroups();
   }, []);
+
+  if (loading) {
+    return null;
+  }
+
+  const groupItems = groups.map((group: any) => (
+    <Card key={group._id} my="4" width="500px">
+      <Flex justifyContent="space-between" alignItems="center">
+        <Flex alignItems="center" my="2" mx="2">
+          <Image
+            mx="2"
+            borderRadius="full"
+            src="/lesboys.png"
+            boxSize="64px"
+          ></Image>
+          <Flex direction="column">
+            <Link
+              mx="4"
+              color="blue.700"
+              fontSize="24"
+              href={`/group/${group._id}`}
+            >
+              {group.name}
+            </Link>
+            <Flex alignItems="center" mx="4" my="2">
+              <Icon as={MdGroups} h="8" w="8"></Icon>
+              <Text fontSize="20" mx="2">
+                {group.numMembers} member
+              </Text>
+            </Flex>
+          </Flex>
+          
+        </Flex>
+        <Button mx="5" colorScheme="red">Leave</Button>
+      </Flex>
+    </Card>
+  ));
   return (
     <Flex>
       <Box mx="auto">
-        {groups.length === 0 ? (
-          <Box>
-            <Text fontSize="24" my="5">
-              No Groups found
-            </Text>
-            <Button width="100%" colorScheme="green" onClick={() => handleClick("create")}>
+        <Box>
+          <Heading my="4">Your groups</Heading>
+
+          {groupItems}
+          <Divider></Divider>
+          <Flex justifyContent="space-around" my="4">
+            <Button
+              mx="4"
+              colorScheme="green"
+              onClick={() => handleClick("create")}
+            >
               Create a group
             </Button>
-            <Flex align="center" my="4">
-            <Divider borderColor="gray.300" />
-            <Text mx="2" color="gray.500">
-              or
-            </Text>
-            <Divider borderColor="gray.300" />
-          </Flex>
-          <Button width="100%" colorScheme="blue" onClick={() => handleClick("join")}>
+            <Button
+              mx="5"
+              colorScheme="blue"
+              onClick={() => handleClick("join")}
+            >
               Join a group
             </Button>
-          </Box>
-        ) : (
-          <Text>Groups</Text>
-        )}
+          </Flex>
+        </Box>
       </Box>
     </Flex>
   );

@@ -57,14 +57,15 @@ app.post("/api/newgroup", verifyToken, async (req, res) => {
     }
     const user = await UserModel.findOne({ _id: req.body.user.id });
     if (!user) {
-      console.log("No user?");
       return res.sendStatus(401);
     }
     const newGroup = await GroupModel.create({
       name: groupName,
       isPublic: isPublic,
       requireApproval: requireApproval,
+      numMembers: 1,
     });
+
     await UserGroupModel.create({ user: user._id, group: newGroup._id, rank: 0 });
     return res.sendStatus(201);
   } catch (error) {
@@ -82,7 +83,10 @@ app.get("/api/groups", verifyToken, async (req, res) => {
     const userGroups = await UserGroupModel.find({ user: user._id })
       .populate("group")
       .exec();
-    return res.json(userGroups);
+
+    const groups = userGroups.map((userGroup) => { return userGroup.group; });
+
+    return res.json(groups);
   } catch (error) {
     console.error(error);
     res.sendStatus(500);

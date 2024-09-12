@@ -19,12 +19,15 @@ import { MdOutlinePublic, MdOutlineAdminPanelSettings } from "react-icons/md";
 import { CiLock } from "react-icons/ci";
 import Navbar from "../comps/Navbar";
 import { GetSession } from "../util/SessionManager";
+import ErrorBox from "../comps/ErrorBox";
+import { useNavigate } from "react-router-dom";
 
 const NewGroup: React.FC = () => {
   const [groupName, setGroupName] = useState("");
   const [isPublic, setIsPublic] = useState("true");
   const [requireApproval, setRequireApproval] = useState(false);
-
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation();
     setRequireApproval(e.target.checked);
@@ -65,10 +68,11 @@ const NewGroup: React.FC = () => {
                 requireApproval,
             }),
         });
-        if (response.status === 401) {
-            console.error("Group already exists");
+        if (response.status === 400) {
+            setError("Group name is already taken");
         } else if (response.status === 201) {
-            console.log("Group created successfully");
+            navigate("/mygroups");
+            return;
         }
     } catch (error) {
     }
@@ -86,6 +90,7 @@ const NewGroup: React.FC = () => {
       <Navbar />
       <Box mx="auto">
         <Heading my="5">Create a new group</Heading>
+        {error && <ErrorBox message={error} />}
         <form onSubmit={handleSubmit}>
           <FormControl id="groupname" mb="4">
             <FormLabel fontWeight="bold">Group Name</FormLabel>

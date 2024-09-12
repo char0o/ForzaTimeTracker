@@ -141,7 +141,7 @@ const NewGroup: React.FC = () => {
                 isChecked={requireApproval}
                 onChange={handleCheckboxChange}
               />
-              <Flex onClick={handleApprovalFlexClick}>
+              <Flex onClick={handleApprovalFlexClick} alignItems="center">
                 <Icon as={MdOutlineAdminPanelSettings} h="9" w="9" mr="1" />
                 <Flex direction="column">
                   <Text fontWeight="bold">Times require approval</Text>

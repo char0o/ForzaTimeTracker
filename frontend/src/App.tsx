@@ -9,7 +9,7 @@ import { ChakraProvider } from "@chakra-ui/react";
 import HomePage from "./pages/HomePage";
 import Dashboard from "./pages/DashBoard";
 import ProtectedRoute from "./util/ProtectedRoute";
-
+import NewGroup from "./pages/NewGroup";
 
 
 function App() {
@@ -23,6 +23,13 @@ function App() {
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/newgroup"
+            element={
+              <ProtectedRoute>
+                <NewGroup />
               </ProtectedRoute>
             }
           />

@@ -57,8 +57,7 @@ const ConnectForm: React.FC = () => {
         setError("Invalid login");
       } else if (response.ok) {
         const data = await response.json();
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("displayName", JSON.stringify(data.displayName));
+        localStorage.setItem("sessionInfo", JSON.stringify(data));
         navigate("/dashboard");
       }
     } catch (error) {

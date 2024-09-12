@@ -5,6 +5,7 @@ import connectDB from "./db";
 import UserModel from "./dbmodel/UserModel";
 import { verifyToken, generateToken } from "./WebToken";
 import jwt from "jsonwebtoken";
+import UserGroupModel from "./dbmodel/UserGroupModel";
 const app = express();
 
 connectDB();
@@ -28,35 +29,55 @@ app.post("/api/signin", async (req, res) => {
       return res.sendStatus(401);
     }
 
-    const token = generateToken({ id: user._id.toString(), email: user.email, displayName: null });
-    return res.json({token});
+    const token = generateToken({
+      id: user._id.toString(),
+      email: user.email,
+      displayName: user.displayName ? user.displayName : null,
+    });
+    return res.json({ token: token, displayName: user.displayName });
   } catch (error) {
     console.error(error);
     res.sendStatus(500);
   }
 });
 
-app.post("/api/choosedisplayname", verifyToken, async (req, res) =>{
-    try {
-        const { displayName } = req.body;
-        console.log(req.body);
-        const userFound = await UserModel.findOne({ displayName: displayName });
-        if (userFound) {
-            console.log("User already exists");
-            return res.sendStatus(401);
-        }
-        const user = await UserModel.findOne({ _id: req.body.user.id });
-        if (!user) {
-            console.log("User not found");
-            return res.sendStatus(401);
-        }
-        user.displayName = displayName;
-        await user.save();
-        return res.sendStatus(201);
-    } catch (error) {
-        console.error(error);
-        res.sendStatus(500);
+app.get("/api/groups", verifyToken, async (req, res) => {
+  try {
+    const user = await UserModel.findOne({ _id: req.body.user.id });
+    if (!user) {
+      return res.sendStatus(401);
     }
+    const userGroups = await UserGroupModel.find({ user: user._id })
+      .populate("group")
+      .exec();
+    return res.json(userGroups);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
+app.post("/api/choosedisplayname", verifyToken, async (req, res) => {
+  try {
+    const { displayName } = req.body;
+    console.log(req.body);
+    const userFound = await UserModel.findOne({ displayName: displayName });
+    if (userFound) {
+      console.log("User already exists");
+      return res.sendStatus(401);
+    }
+    const user = await UserModel.findOne({ _id: req.body.user.id });
+    if (!user) {
+      console.log("User not found");
+      return res.sendStatus(401);
+    }
+    user.displayName = displayName;
+    await user.save();
+    return res.sendStatus(201);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
 });
 
 app.post("/api/signup", async (req, res) => {

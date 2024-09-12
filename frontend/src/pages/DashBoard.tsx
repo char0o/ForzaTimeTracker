@@ -1,30 +1,31 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Box, Text, Button, Flex, Heading } from "@chakra-ui/react";
 import ChooseDisplayName from "../comps/ChooseDisplayName";
+import GroupsDisplay from "../comps/GroupsDisplay";
+
 const Dashboard: React.FC = () => {
   const [displayName, setDisplayName] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const displayName = localStorage.getItem("displayName");
+    const sessionInfo = localStorage.getItem("sessionInfo");
+    const sessionObj = sessionInfo ? JSON.parse(sessionInfo) : null;
+    const displayName = sessionObj?.displayName;
     if (displayName) {
       setDisplayName(displayName ?? undefined);
-      
     } else {
-        setDisplayName(undefined);
+      setDisplayName(undefined);
     }
     setLoading(false);
   }, []);
 
   const handleDisplayNameChange = () => {
     const displayName = localStorage.getItem("displayName");
-    if (displayName){
-        setDisplayName(displayName ?? undefined);
+    if (displayName) {
+      setDisplayName(displayName ?? undefined);
     } else {
-        setDisplayName(undefined);
+      setDisplayName(undefined);
     }
-    
   };
   if (loading) {
     return null;
@@ -36,9 +37,9 @@ const Dashboard: React.FC = () => {
       direction="column"
       alignContent="center"
       justify="center"
-      bg="gray.100"
+      bg="gray.50"
     >
-      {displayName === 'undefined' ? (
+      {displayName === undefined ? (
         <>
           {" "}
           <Heading textAlign="center" fontSize="72" mb="16">
@@ -52,7 +53,9 @@ const Dashboard: React.FC = () => {
           </Box>
         </>
       ) : (
-        <></>
+        <>
+          <GroupsDisplay />
+        </>
       )}
     </Flex>
   );
